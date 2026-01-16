@@ -433,30 +433,162 @@ void* copy_elements(void *ele_src[], int ele_cnt,
 /* (x << (n + 1) - (x << m) */
 /*  -(x << m) */
 
-00100 * 00110 = 11000
-00100 << 3 = 100000
-100000 - 001000 = 24
 
-000100 * 111010 = -24
-= 101000
+/* 00100 * 00110 = 11000 */
+/* 00100 << 3 = 100000 */
+/* 100000 - 00100 << 1 = */
+/* 100000 - 001000 = 011000 */
 
--6 = 111010
-111000
-000010
--6 * 4 = 101000
--000100 = 111100
-111100 << 3 << 2
-100000 
+/* 000100 * 111010 = 101000 */
+/* -000100 = 111011 + 000001 */
+/* = 111100 */
 
-110000 = 48
-000111  = 7
+/* x * 111110 * 000011 */ 
+
+/* 000100 << 1 = 001000 */
+/* 001000 + 000100 = 001100 */
+/* -001100 = 110011 + 1 */
+/* = 110100 */
+/* 110100 << 1 = 101000 */
+
+/* 55 11 5 */
+/* 0101 */
+/* ((x << 2) + x) */
+/* 1011 */
+/* ((x << 3) + (x << 2) + x) */
+
+/* 0000010 * */
+/* 0110111 = */ 
+/* 1101110 = */ 
+
+/* 0000010 << 3 = */
+/* 0010000 */
+
+/* 0010000 + */ 
+/* 0000010 = */ 
+/* 0010010 */
+
+/* 0010010 << 6 = */
+/*     111110 */
+/* 10010000000 - */ 
+/* 00000010010 */
+/* 10001101110 */ 
 
 
 
 
 
-6  2  1  x << (2+1) - (x << 1)
-31 1  1  (x << 5) - x
--6 2  1  (-x << 3) << 2
-55 2  2  ((-x << 4) << 3) - x
 
+
+
+/* 6  2  1  x << (2+1) - (x << 1) */
+/* 31 1  1  (x << 5) - x */
+/* -6 2  1  (-((x << 1) + x) << 1) */
+/*     // -2x - 8x */
+
+/* 55 2  2  ((x << 6) - (x << 3) - x) */
+
+/* 11x + 5x */
+/* 64x - 9x */
+/* x << 6 and x << 3 + x */
+
+// the compiler should choose based on which is more optimal
+// if there are long runs of 1 then its a good choice.
+//
+
+// int is assumed to be 32 bits ong and two's complement, right shift is arithmetic
+/* int div16(int x){ */
+/*     int parity = x >> 31; */
+/*     int res = (x + (parity & 15)) >> 4; */
+/*     return res; */
+/* } */
+
+/* #define M /1* Mystery number 1 *1/ */
+/* #define N /1* Mystery number 2 *1/ */
+/* int arith(int x, int y) { */
+/*     int result = 0; */
+/*     result = x*M + y/N; /1* M and N are mystery */
+/*                            numbers. *1/ */
+/*     return result; */
+/* } */
+
+/* /1* Translation of assembly code for arith *1/ */
+/* int optarith(int x, int y) { */
+/*     int t = x; */
+/*     x <<= 5; */
+/*     x-=t; */
+/*     if (y < 0) y += 7; */
+/*     y >>= 3; /1* Arithmetic shift *1/ */
+/*     return x+y; */
+/* } */
+
+
+/* M is 31 */
+/* N is 2^3 which is 8 */
+
+
+//int is 32 bits long, two's complement, right shift is arithmetic for signed, logical for unsigned
+
+/* int x = foo(); /1* Arbitrary value *1/ */
+/* int y = bar(); /1* Arbitrary value *1/ */
+
+/* unsigned ux = x; */
+/* unsigned uy = y; */
+
+/* (x > 0) | | (x-1 < 0) */ 
+/*     0 == 0 but -1 < 0 */ 
+/*     int_min < 0 and int_min - 1 > 0 */
+
+/* (x & 7) != 7 | | (x<<29 < 0) */
+/*     0111          mult by 2^29 mod 32 is negative */
+/*     8 is 1000 */
+/*     1000 & */
+/*     0111 */ 
+/*     0000 is != 7 nor */ 
+/*     0x00000008 << 29 is 0x00000000 */
+/*     0 is not < 0 */
+/* 16 */ 
+/* 10000 & */
+/* 00111 */
+/* 00000 != 7 */
+
+/* 7 << 29 is 0 */
+/* 0000 0000 0000 0000 0000 0000 0000 0111 */
+/* 1110 0000 0000 0000 0000 0000 0000 0000 */
+
+
+/* (x * x) >= 0 */
+/* int_max */ 
+
+/* x < 0 | | -x <= 0 */
+/* true */
+
+
+/* x > 0 | | -x >= 0 */
+/* int_min will be int_min when negated */
+
+/* x+y == uy+ux */
+/* int_max 1 = int_min */
+/* // They are not numerically the same, but signed will be converted to unsigned */ 
+/* // and then they will be the same. */
+
+/* 0111 + 1 = 1000 */
+
+/* x = -3 */
+/* y = 4 */
+/* x*~y + uy*ux == -x */
+/* 1101 * ~0100 + 1101*0100 */
+
+/* 1..1101 * */ 
+/* 1..1011 = */ 
+/* 0..01111 (15) */
+
+/* 1101 * 0100 = 1..10100 (-12) */
+/* 0xfffffff4 + 0x0000000f = */ 
+/* 1..10100 */
+/* 0..01111 */
+/* 0..00011 */
+
+/* ~y = -y - 1 */
+/* x * (-y -1) */
+/* x * -y -x +x * y = -x */
